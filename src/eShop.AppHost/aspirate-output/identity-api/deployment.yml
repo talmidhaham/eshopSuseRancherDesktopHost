@@ -1,0 +1,62 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: identity-api
+spec:
+  minReadySeconds: 60
+  replicas: 1
+  selector:
+    matchLabels:
+      app: identity-api
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app: identity-api
+    spec:
+      containers:
+      - name: identity-api
+        image: eshop/identity-api:eshop
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          allowPrivilegeEscalation: false
+          runAsUser: 0
+        lifecycle:
+          postStart:
+            exec:
+              command: ["/bin/sh", "-c", "chmod -R 777 /app"]
+        volumeMounts:
+        - mountPath: /lolo
+          name: mydir
+        - mountPath: /lolo/keys
+          name: mydir2
+        - mountPath: /lolo/tempkey.jwk
+          name: myfile
+        ports:
+        - containerPort: 8080
+        - containerPort: 8443
+        envFrom:
+        - configMapRef:
+            name: identity-api-env
+        - secretRef:
+            name: identity-api-secrets
+      terminationGracePeriodSeconds: 180
+      volumes:
+      - name: mydir
+        hostPath:
+          # Ensure the file directory is created.
+          path: /lolo
+          type: DirectoryOrCreate
+      - name: mydir2
+        hostPath:
+          # Ensure the file directory is created.
+          path: /lolo/keys
+          type: DirectoryOrCreate
+      - name: myfile
+        hostPath:
+          path: /lolo/tempkey.jwk
+          type: FileOrCreate

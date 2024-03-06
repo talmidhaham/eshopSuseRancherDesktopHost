@@ -1,0 +1,9 @@
+{
+  "TemplatePath": null,
+  "ContainerSettings": {
+    "Registry": null,
+    "RepositoryPrefix": "eshop",
+    "Tag": "eshop",
+    "Builder": "docker"
+  }
+}

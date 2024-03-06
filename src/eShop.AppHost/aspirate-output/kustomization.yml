@@ -1,0 +1,7 @@
+resources:
+- postgres
+- identity-api
+
+generatorOptions:
+  disableNameSuffixHash: true
+
